@@ -1,8 +1,15 @@
 pragma solidity ^0.5.0;
 
-// lvl 1: equal split
 contract AssociateProfitSplitter {
-    // @TODO: Create three payable addresses representing `employee_one`, `employee_two` and `employee_three`.
+
+    // Create three payable addresses representing `employee_one`, `employee_two` and `employee_three`.
+
+    address payable private employee_one;
+    address payable private employee_two;
+    address payable private employee_three; 
+    address payable owner = msg.sender; 
+
+    uimt public balanceContract;
 
     constructor(address payable _one, address payable _two, address payable _three) public {
         employee_one = _one;
@@ -11,22 +18,27 @@ contract AssociateProfitSplitter {
     }
 
     function balance() public view returns(uint) {
-        return address(this).balance;
+        return balanceContract;
     }
 
     function deposit() public payable {
-        // @TODO: Split `msg.value` into three
-        uint amount = ; // Your code here!
+        // Split `msg.value` into three
 
-        // @TODO: Transfer the amount to each employee
-        // Your code here!
+        require (msg.sender == owner, "You are NOT the Owner of this Account");
 
-        // @TODO: take care of a potential remainder by sending back to HR (`msg.sender`)
-        // Your code here!
+        uint amount =  msg.value / 3;
+
+        // Transfer the amount to each employee
+        employee_one.transfer(amount);
+        employee_two.transfer(amount);
+        employee_three.transfer(amount);
+
+        // Take care of a potential remainder by sending back to HR (`msg.sender`)
+        owner.transfer(msg.value - amount * 3);
     }
 
     function() external payable {
-        // @TODO: Enforce that the `deposit` function is called in the fallback function!
-        // Your code here!
+        // Enforce that the `deposit` function is called in the fallback function!
+        function() deposit;
     }
 }
